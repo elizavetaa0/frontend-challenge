@@ -1,0 +1,57 @@
+.card__list {
+  margin-inline: 62px;
+  margin-block-start: 48px;
+  margin-block-end: 100px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  column-gap: 48px;
+  row-gap: 52px;
+}
+
+.card__container {
+  width: 225px;
+  height: 225px;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+
+.card__container:hover {
+  transform: scale(1.14);
+  box-shadow: 
+    0 6px 5px rgba(0, 0, 0, 0.24), 
+    0 9px 18px rgba(0, 0, 0, 0.24);
+}
+
+.card__like__button {
+  cursor: pointer;
+  width: 48px;
+  height: 48px;
+  color: #F24E1E;
+  position: absolute;
+  bottom: 19px;
+  right: 15px;
+  opacity: 0;
+  fill: transparent;
+  transition: opacity 0.3s ease-in-out, fill 0.3s ease-in-out;
+}
+
+.card__container:hover .card__like__button {
+  opacity: 1;
+}
+
+.card__like__button:hover {
+  fill: #F24E1E;
+}
+
+.card__like__button.active {
+  opacity: 1;
+  fill: #f24e1e;
+}
+
+.card__container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

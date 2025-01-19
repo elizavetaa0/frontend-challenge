@@ -1,0 +1,23 @@
+.card__list {
+  margin-inline: 62px;
+  margin-block-start: 48px;
+  margin-block-end: 100px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  column-gap: 48px;
+  row-gap: 52px;
+}
+
+.card__list__loader__container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  margin-block-start: 100px;
+}
+
+.error {
+  text-align: center;
+  margin: 100px auto;
+  color: #F24E1E;
+}

@@ -1,0 +1,23 @@
+.header__container {
+  display: flex;
+  background-color: #2196F3;
+  padding-inline: 60px;
+  box-shadow: 0 4px 4px rgba($color: #000000, $alpha: 0.24);
+  inline-size: 100%;
+}
+
+.header__button {
+  padding-block: 23px;
+  padding-inline: 25px;
+  text-align: center;
+  color: #fff;
+  transition: background-color 0.5s ease-in-out;
+}
+
+.header__button:hover {
+  background-color: #1E88E5;
+}
+
+.header__button.active {
+  background-color: #1E88E5;
+}
