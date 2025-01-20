@@ -6,7 +6,7 @@
 
 ## GitHub Pages
 
-Приложение доступно по ссылке 
+Приложение доступно по ссылке https://elizavetaa0.github.io/frontend-challenge/
 
 ## Доступные скрипты
 
