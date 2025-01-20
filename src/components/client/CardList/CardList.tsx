@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import style from './style.module.scss';
 import { getCats } from '../../../services/api';
-import { CardUI, HeaderUI } from '../../ui';
-import { Oval } from 'react-loader-spinner';
+import { CardListUI, ErrorUI, HeaderUI, LoaderUI } from '../../ui';
 
 type Cat = {
   id: string;
@@ -15,11 +13,21 @@ export function CardList() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'all' | 'favorites'>('all');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  const fetchCats = async () => {
+  const fetchCats = async (isLoadMore = false) => {
     try {
+      if (!isLoadMore) {
+        setCats([]);
+      }
+
       setLoading(true);
-      const data = await getCats();
+      const data = await getCats(page);
+
+      if (data.length === 0) {
+        setHasMore(false);
+      }
 
       const likedCats = JSON.parse(localStorage.getItem('likedCats') || '[]') as Cat[];
 
@@ -28,7 +36,7 @@ export function CardList() {
         isLiked: likedCats.some((likedCat) => likedCat.id === cat.id),
       }));
 
-      setCats(updatedCats);
+      setCats((prevCats) => (isLoadMore ? [...prevCats, ...updatedCats] : updatedCats));
     } catch (err: any) {
       setError(err.message || 'Ошибка загрузки данных');
     } finally {
@@ -41,6 +49,28 @@ export function CardList() {
     const savedLikedCats = JSON.parse(localStorage.getItem('likedCats') || '[]');
     setLikedCats(savedLikedCats);
   }, []);
+
+  useEffect(() => {
+    if (page > 1) {
+      fetchCats(true);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 100 &&
+        hasMore &&
+        !loading
+      ) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasMore, loading]);
 
   const handleAllCatsClick = () => {
     fetchCats();
@@ -55,45 +85,44 @@ export function CardList() {
 
   const handleLikeClick = (cat: Cat) => {
     const likedCats = JSON.parse(localStorage.getItem('likedCats') || '[]') as Cat[];
-  
     const isLiked = likedCats.some((likedCat) => likedCat.id === cat.id);
-  
+
     let updatedLikedCats;
     if (isLiked) {
       updatedLikedCats = likedCats.filter((likedCat) => likedCat.id !== cat.id);
     } else {
       updatedLikedCats = [...likedCats, cat];
     }
-  
+
     localStorage.setItem('likedCats', JSON.stringify(updatedLikedCats));
     setLikedCats(updatedLikedCats);
 
-    setCats((prevCats) => 
-      prevCats.map((prevCat) => 
-        prevCat.id === cat.id ? { ...prevCat, isLiked: !isLiked } : prevCat
-      )
-    );
+    if (activeTab === 'favorites') {
+      setCats((prevCats) => prevCats.filter((prevCat) => prevCat.id !== cat.id));
+    } else {
+      setCats((prevCats) =>
+        prevCats.map((prevCat) =>
+          prevCat.id === cat.id ? { ...prevCat, isLiked: !isLiked } : prevCat
+        )
+      );
+    }
   };
 
-  if (loading) {
+  if (loading && cats.length === 0) {
     return (
       <>
-      <HeaderUI
-        onAllCatsClick={handleAllCatsClick}
-        onFavoriteCatsClick={handleFavoriteCatsClick}
-        activeTab={activeTab}
-      />
-      <div className={style.card__list__loader__container}>
-        <Oval color='#2196F3' secondaryColor='#C1DFF7' />
-        <p>Загружаем котиков</p>
-      </div>
+        <HeaderUI
+          onAllCatsClick={handleAllCatsClick}
+          onFavoriteCatsClick={handleFavoriteCatsClick}
+          activeTab={activeTab}
+        />
+        <LoaderUI />
       </>
-
     );
   }
 
   if (error) {
-    return <div className={style.error}>Ошибка: {error}</div>;
+    return <ErrorUI error={error} />;
   }
 
   return (
@@ -103,19 +132,12 @@ export function CardList() {
         onFavoriteCatsClick={handleFavoriteCatsClick}
         activeTab={activeTab}
       />
-      <div className={style.card__list}>
-        {cats.map((cat) => {
-          const isLiked = likedCats.some((likedCat) => likedCat.id === cat.id);
-          return (
-            <CardUI
-              key={cat.id}
-              image={cat.url}
-              onClick={() => handleLikeClick(cat)}
-              isLiked={isLiked}
-            />
-          );
-        })}
-      </div>
+      <CardListUI
+        cats={cats}
+        likedCats={likedCats}
+        handleLikeClick={handleLikeClick}
+      />
+      {loading && <LoaderUI />}
     </div>
   );
 }

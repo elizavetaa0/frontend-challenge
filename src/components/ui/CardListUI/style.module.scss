@@ -1,0 +1,24 @@
+.card__list {
+  margin-inline: clamp(1.25rem, 0.3257rem + 3.9437vw, 3.875rem);
+  margin-block-start: 48px;
+  margin-block-end: 100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 10vw, 300px), 1fr));
+  gap: clamp(1.25rem, 0.75rem + 2.5vw, 3rem);
+}
+
+
+@media (max-width: 465px) {
+  .card__list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .card__list {
+    justify-items: center;
+  }
+}
